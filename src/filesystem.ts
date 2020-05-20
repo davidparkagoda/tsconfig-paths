@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { TryPath } from './try-path';
 
 /**
  * Typing for the fields of package.json we care about
@@ -84,4 +85,8 @@ export function fileExistsAsync(
 
 export function removeExtension(path: string): string {
   return path.substring(0, path.lastIndexOf(".")) || path;
+}
+
+export function removeExtension2(path: TryPath): string {
+  return !path.extensionLength ? removeExtension(path.path) : path.path.slice(0, -path.extensionLength);
 }

@@ -1,11 +1,12 @@
 import * as path from "path";
 import { MappingEntry } from "./mapping-entry";
 import { dirname } from "path";
-import { removeExtension } from "./filesystem";
+import { removeExtension2 } from './filesystem';
 
 export interface TryPath {
   readonly type: "file" | "extension" | "index" | "package";
   readonly path: string;
+  readonly extensionLength?: number;
 }
 
 /**
@@ -41,7 +42,7 @@ export function getPathsToTry(
         pathsToTry.push({ type: "file", path: physicalPath });
         pathsToTry.push(
           ...extensions.map(
-            e => ({ type: "extension", path: physicalPath + e } as TryPath)
+            e => ({ type: "extension", path: physicalPath + e, extensionLength: e.length } as TryPath)
           )
         );
         pathsToTry.push({
@@ -67,7 +68,7 @@ export function getStrippedPath(tryPath: TryPath): string {
     : tryPath.type === "file"
       ? tryPath.path
       : tryPath.type === "extension"
-        ? removeExtension(tryPath.path)
+        ? removeExtension2(tryPath)
         : tryPath.type === "package"
           ? tryPath.path
           : exhaustiveTypeException(tryPath.type);
@@ -80,7 +81,7 @@ export function exhaustiveTypeException(check: never): never {
 /**
  * Matches pattern with a single star against search.
  * Star must match at least one character to be considered a match.
- * @param patttern for example "foo*" 
+ * @param patttern for example "foo*"
  * @param search for example "fooawesomebar"
  * @returns the part of search that * matches, or undefined if no match.
  */
